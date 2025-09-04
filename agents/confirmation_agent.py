@@ -26,7 +26,8 @@ class ConfirmationAgent:
                            appointment_data: Dict[str, Any],
                            patient_info: Dict[str, Any],
                            insurance_info: Dict[str, Any],
-                           selected_slot: Dict[str, Any]) -> Tuple[str, bool, Dict[str, Any]]:
+                           selected_slot: Dict[str, Any],
+                           patient_type: str = "new") -> Tuple[str, bool, Dict[str, Any]]:
         """
         Confirm the complete appointment booking
         
@@ -73,7 +74,7 @@ class ConfirmationAgent:
                 'date_of_birth': patient_info.get('date_of_birth', ''),
                 'doctor': selected_slot.get('doctor', ''),
                 'location': selected_slot.get('location', ''),
-                'duration': selected_slot.get('duration_available', ''),
+                'duration': 60 if patient_type == "new" else 30,  # ✅ CORRECT!
                 'insurance_carrier': insurance_info.get('primary_carrier', ''),
                 'member_id': insurance_info.get('member_id', ''),
                 'group_number': insurance_info.get('group_number', ''),

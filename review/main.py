@@ -222,7 +222,7 @@ class MedicalSchedulerApp:
                         state["selected_slot"] = selected_slot
                         state["current_step"] = "insurance"
                         
-                        response = f"✅ **Slot Selected!**\n\nYou've selected slot {user_input}:\n**Date**: {selected_slot.date}\n**Time**: {selected_slot.time}\n**Doctor**: {selected_slot.doctor}\n**Location**: {selected_slot.location}\n\nNow let's collect your insurance information..."
+                        response = f"✅Slot Selected!\n\nYou've selected slot {user_input}:\n*Date**: {selected_slot.date}\n**Time**: {selected_slot.time}\n**Doctor**: {selected_slot.doctor}\n**Location**: {selected_slot.location}\n\nNow let's collect your insurance information..."
                         state["agent_response"] = response
                         state["conversation_history"].append(f"Agent: {response}")
                     else:

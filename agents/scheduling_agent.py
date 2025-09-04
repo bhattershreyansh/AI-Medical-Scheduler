@@ -90,25 +90,68 @@ class SchedulingAgent:
     def _filter_available_slots(self, doctor: str, location: str, duration: int) -> List[Dict]:
         """Filter available slots based on preferences"""
         try:
-            # Filter by doctor, location, availability, and duration
-            filtered_df = self.schedule_df[
-                (self.schedule_df['doctor'] == doctor) &
-                (self.schedule_df['location'] == location) &
-                (self.schedule_df['available'] == True) &
-                (self.schedule_df['duration_available'] >= duration)
-            ].copy()
+            if duration == 60:  # New patient needs 2 consecutive slots
+                # Find slots where current slot + next slot are both available
+                available_slots = self._find_consecutive_slots(doctor, location)
+            else:  # Returning patient needs 1 slot
+                filtered_df = self.schedule_df[
+                    (self.schedule_df['doctor'] == doctor) &
+                    (self.schedule_df['location'] == location) &
+                    (self.schedule_df['available'] == True) &
+                    (self.schedule_df['duration_available'] >= duration)
+                ].copy()
+                available_slots = filtered_df.to_dict('records')
             
             # Sort by date and time
-            filtered_df['datetime'] = pd.to_datetime(filtered_df['date'] + ' ' + filtered_df['time'])
-            filtered_df = filtered_df.sort_values('datetime')
-            
-            # Get next 7 available slots
-            available_slots = filtered_df.head(7).to_dict('records')
+            if available_slots:
+                df = pd.DataFrame(available_slots)
+                df['datetime'] = pd.to_datetime(df['date'] + ' ' + df['time'])
+                df = df.sort_values('datetime')
+                available_slots = df.head(7).to_dict('records')
             
             return available_slots
             
         except Exception as e:
             print(f"Error filtering available slots: {e}")
+            return []
+
+    def _find_consecutive_slots(self, doctor: str, location: str) -> List[Dict]:
+        """Find consecutive 30-minute slots for new patients (60 minutes total)"""
+        consecutive_slots = []
+        
+        try:
+            # Get all available slots for this doctor/location
+            doctor_slots = self.schedule_df[
+                (self.schedule_df['doctor'] == doctor) &
+                (self.schedule_df['location'] == location) &
+                (self.schedule_df['available'] == True) &
+                (self.schedule_df['duration_available'] >= 30)
+            ].copy()
+            
+            if doctor_slots.empty:
+                return consecutive_slots
+            
+            # Sort by date and time
+            doctor_slots['datetime'] = pd.to_datetime(doctor_slots['date'] + ' ' + doctor_slots['time'])
+            doctor_slots = doctor_slots.sort_values('datetime')
+            
+            # Check for consecutive slots
+            for i in range(len(doctor_slots) - 1):
+                current_slot = doctor_slots.iloc[i]
+                next_slot = doctor_slots.iloc[i + 1]
+                
+                # Check if slots are consecutive (30 minutes apart)
+                current_time = pd.to_datetime(current_slot['date'] + ' ' + current_slot['time'])
+                next_time = pd.to_datetime(next_slot['date'] + ' ' + next_slot['time'])
+                
+                if (next_time - current_time).total_seconds() == 1800:  # 30 minutes = 1800 seconds
+                    # Found consecutive slots - add the first one
+                    consecutive_slots.append(current_slot.to_dict())
+            
+            return consecutive_slots
+            
+        except Exception as e:
+            print(f"Error finding consecutive slots: {e}")
             return []
     
     def _create_appointment_slots(self, available_slots: List[Dict]) -> List[AppointmentSlot]:
@@ -178,54 +221,64 @@ class SchedulingAgent:
         )
     
     def update_doctor_schedule(self, selected_slot: AppointmentSlot, patient_type: str):
-        """Mark the booked slot as unavailable in the Excel file"""
+        """Mark the booked slot(s) as unavailable in the Excel file"""
         try:
-            # Find the exact row that matches this slot
-            mask = (
-                (self.schedule_df['doctor'] == selected_slot.doctor) &
-                (self.schedule_df['location'] == selected_slot.location) &
-                (self.schedule_df['date'] == selected_slot.date) &
-                (self.schedule_df['time'] == selected_slot.time)
-            )
-            
-            if mask.any():
-                # Get current available duration
-                current_duration = self.schedule_df.loc[mask, 'duration_available'].iloc[0]
+            if patient_type == "new":
+                # New patient needs 60 minutes = 2 consecutive 30-minute slots
+                # Find both the selected slot AND the next 30-minute slot
                 
-                # Calculate remaining duration based on patient type
-                if patient_type == "new":
-                    # New patient takes full slot (60 min)
-                    remaining_duration = 0
-                    slot_status = "Fully Booked"
-                else:
-                    # Returning patient takes 30 min, leave remaining time
-                    remaining_duration = max(0, current_duration - 30)
-                    slot_status = "Partially Booked" if remaining_duration > 0 else "Fully Booked"
+                # Get the selected slot time
+                selected_time = selected_slot.time
                 
-                # Update the schedule
-                self.schedule_df.loc[mask, 'duration_available'] = remaining_duration
+                # Calculate next 30-minute slot
+                from datetime import datetime, timedelta
+                time_obj = datetime.strptime(selected_time, '%H:%M').time()
+                next_time_obj = (datetime.combine(datetime.today(), time_obj) + timedelta(minutes=30)).time()
+                next_time = next_time_obj.strftime('%H:%M')
                 
-                # Mark as unavailable if no time left
-                if remaining_duration == 0:
-                    self.schedule_df.loc[mask, 'available'] = False
-                    slot_status = "Fully Booked"
+                # Update BOTH slots
+                mask1 = (
+                    (self.schedule_df['doctor'] == selected_slot.doctor) &
+                    (self.schedule_df['location'] == selected_slot.location) &
+                    (self.schedule_df['date'] == selected_slot.date) &
+                    (self.schedule_df['time'] == selected_slot.time)
+                )
                 
-                # Save updated schedule back to Excel
-                self.schedule_df.to_excel(self.schedule_excel_path, index=False)
+                mask2 = (
+                    (self.schedule_df['doctor'] == selected_slot.doctor) &
+                    (self.schedule_df['location'] == selected_slot.location) &
+                    (self.schedule_df['date'] == selected_slot.date) &
+                    (self.schedule_df['time'] == next_time)
+                )
                 
-                print(f"✅ Doctor schedule updated - {slot_status}")
-                print(f"   Doctor: {selected_slot.doctor}")
-                print(f"   Date: {selected_slot.date}")
-                print(f"   Time: {selected_slot.time}")
-                print(f"   Patient Type: {patient_type}")
-                print(f"   Duration Used: {30 if patient_type == 'returning' else 60} minutes")
-                print(f"   Remaining: {remaining_duration} minutes")
-                return True
+                # Mark both slots as unavailable
+                self.schedule_df.loc[mask1, 'available'] = False
+                self.schedule_df.loc[mask1, 'duration_available'] = 0
+                self.schedule_df.loc[mask1, 'status'] = "Fully Booked (New Patient)"
+                
+                self.schedule_df.loc[mask2, 'available'] = False
+                self.schedule_df.loc[mask2, 'duration_available'] = 0
+                self.schedule_df.loc[mask2, 'status'] = "Fully Booked (New Patient)"
+                
             else:
-                print(f"❌ Could not find slot to update in schedule")
-                print(f"   Looking for: {selected_slot.doctor}, {selected_slot.date}, {selected_slot.time}")
-                return False
+                # Returning patient needs 30 minutes = 1 slot
+                mask = (
+                    (self.schedule_df['doctor'] == selected_slot.doctor) &
+                    (self.schedule_df['location'] == selected_slot.location) &
+                    (self.schedule_df['date'] == selected_slot.date) &
+                    (self.schedule_df['time'] == selected_slot.time)
+                )
                 
+                # Mark slot as unavailable
+                self.schedule_df.loc[mask, 'available'] = False
+                self.schedule_df.loc[mask, 'duration_available'] = 0
+                self.schedule_df.loc[mask, 'status'] = "Fully Booked (Returning Patient)"
+            
+            # Save the updated schedule
+            self.schedule_df.to_excel(self.schedule_excel_path, index=False)
+            print(f"✅ Updated doctor schedule: {patient_type} patient booked {selected_slot.time}")
+            return True
+            
         except Exception as e:
             print(f"❌ Error updating doctor schedule: {e}")
             return False

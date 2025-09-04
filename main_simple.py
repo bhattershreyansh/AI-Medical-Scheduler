@@ -239,7 +239,7 @@ class MedicalSchedulerApp:
                     'email': self.state["patient_info"].email,
                     'phone': self.state["patient_info"].phone,
                     'date_of_birth': self.state["patient_info"].date_of_birth,
-                    'patient_id': self.state["lookup_result"].patient_id  # Pass the correct patient ID
+                    'patient_id': self.state["lookup_result"].patient_id
                 },
                 {
                     'primary_carrier': self.state["insurance_info"].primary_carrier,
@@ -252,7 +252,8 @@ class MedicalSchedulerApp:
                     'doctor': self.state["selected_slot"].doctor,
                     'location': self.state["selected_slot"].location,
                     'duration_available': self.state["selected_slot"].duration_available
-                }
+                },
+                self.state["lookup_result"].patient_type
             )
             
             if not success:
