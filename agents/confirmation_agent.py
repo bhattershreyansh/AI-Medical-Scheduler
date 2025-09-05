@@ -121,12 +121,13 @@ class ConfirmationAgent:
                                 confirmation_record: Dict[str, Any]) -> bool:
         """Send appointment confirmation email"""
         
+        # ✅ FIX: Use the correct duration from confirmation record, not from slot
         appointment_data = {
             'date': confirmation_record['appointment_slot']['date'],
             'time': confirmation_record['appointment_slot']['time'],
             'doctor': confirmation_record['appointment_slot']['doctor'],
             'location': confirmation_record['appointment_slot']['location'],
-            'duration': confirmation_record['appointment_slot']['duration_available']
+            'duration': confirmation_record['duration']  # ✅ Use calculated duration
         }
         
         return self.notification_service.send_appointment_confirmation(
@@ -164,7 +165,7 @@ class ConfirmationAgent:
             f"• **Time**: {slot['time']}\n"
             f"• **Doctor**: {slot['doctor']}\n"
             f"• **Location**: {slot['location']}\n"
-            f"• **Duration**: {slot['duration_available']} minutes\n"
+            f"• **Duration**: {confirmation_record['duration']} minutes\n"
             f"• **Appointment ID**: {confirmation_record['appointment_id']}\n\n"
             f"📧 **Confirmations Sent:**\n"
             f"• Email confirmation: {'✅ Sent' if confirmation_record['email_sent'] else '❌ Failed'}\n"
@@ -174,35 +175,41 @@ class ConfirmationAgent:
         return message
     
     def export_to_excel(self, confirmation_record: Dict[str, Any]) -> Tuple[str, bool]:
-        """Export appointment data to Excel"""
+        """Export appointment data to Excel and update admin report"""
         try:
             from utils.excel_export import ExcelExportService
             
             excel_service = ExcelExportService()
             
-            # Export appointment data
-            response_message, success = excel_service.export_appointment_data(confirmation_record)
+            # Export single appointment to Excel
+            export_response, export_success = excel_service.export_appointment_data(confirmation_record)
             
-            if success:
-                # Update confirmation record
-                confirmation_record['excel_exported'] = True
+            if export_success:
+                # ✅ FIX: Read ALL appointments from Excel file, not in-memory list
+                if os.path.exists(excel_service.appointments_file):
+                    import pandas as pd
+                    appointments_df = pd.read_excel(excel_service.appointments_file)
+                    all_appointments = appointments_df.to_dict('records')
+                else:
+                    all_appointments = [confirmation_record]
                 
-                # 🆕 ADD THIS: Update admin report after successful export
-                self._update_admin_report()
+                # Generate updated admin report with ALL data from Excel
+                admin_response, admin_success = excel_service.generate_admin_review_report(all_appointments)
                 
-                # Store export record
-                export_data = {
-                    'appointment_id': confirmation_record['appointment_id'],
-                    'patient_name': confirmation_record['patient_info']['patient_name'],
-                    'exported_at': datetime.now().isoformat(),
-                    'status': 'success'
-                }
-                self.excel_exports.append(export_data)
+                if admin_success:
+                    print(f"✅ Admin report updated successfully")
+                    print(f"   Total appointments: {len(all_appointments)}")
+                    print(f"   Report file: {excel_service.admin_report_file}")
+                    
+                    # Log the update for tracking
+                    self._log_admin_report_update(len(all_appointments))
+                else:
+                    print(f"⚠️ Admin report update failed: {admin_response}")
             
-            return response_message, success
+            return export_response, export_success
             
         except Exception as e:
-            print(f"❌ Error exporting to Excel: {e}")
+            print(f"❌ Error in Excel export: {e}")
             return f"❌ Error exporting to Excel: {str(e)}", False
     
     def _update_admin_report(self):

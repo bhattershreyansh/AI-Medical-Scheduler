@@ -55,7 +55,7 @@ class GreetingAgent:
         if not user_input or not user_input.strip():
             current_field_name = self.fields[self.current_field] if self.current_field < len(self.fields) else "information"
             return self._generate_retry_message(current_field_name), False, None
-        
+            
         user_input = user_input.strip()
         self.conversation_history.append(f"Patient: {user_input}")
         
@@ -125,11 +125,11 @@ Input: "john" for patient_name → {{}} (missing last name)
                 # Validate that we got the expected field
                 if current_field in extracted and extracted[current_field]:
                     return {current_field: extracted[current_field]}
-            
+                
         except Exception as e:
             print(f"LLM extraction error: {e}")
         
-        return None
+            return None
     
     def _advance_to_next_field(self):
         """Move to the next field that hasn't been collected"""
@@ -222,7 +222,7 @@ Be encouraging and specific about what's needed."""
             return f"🎉 {response.content.strip()}"
         except:
             # Fallback completion message
-            return (
+        return (
                 f"🎉 **Perfect! I have all your information:**\n\n"
                 f"• **Name**: {self.collected_data.get('patient_name')}\n"
                 f"• **DOB**: {self.collected_data.get('date_of_birth')}\n"
@@ -231,7 +231,7 @@ Be encouraging and specific about what's needed."""
                 f"• **Doctor**: {self.collected_data.get('preferred_doctor')}\n"
                 f"• **Location**: {self.collected_data.get('location')}\n\n"
                 f"Now let me search our patient database to see if you're a new or returning patient..."
-            )
+        )
     
     def reset(self):
         """Reset agent state for new conversation"""

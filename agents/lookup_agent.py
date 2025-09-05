@@ -218,8 +218,7 @@ class LookupAgent:
                 df = pd.DataFrame(columns=[
                     'patient_id', 'first_name', 'last_name', 'dob', 'phone', 'email',
                     'address', 'last_visit', 'patient_type', 'insurance_carrier', 
-                    'member_id', 'group_number', 'emergency_contact', 'insurance_provider', 
-                    'policy_number', 'notes'
+                    'member_id', 'group_number','notes'
                 ])
             
             # Add new patient
