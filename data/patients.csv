@@ -55,4 +55,5 @@ PAT_053,Rishit,Meh,12/12/2003,,,,2025-09-05,new,cigna,12345.0,12344,,cigna,,New 
 PAT_054,A,B,06/20/2004,,,,2025-09-05,returning,aetna,12345.0,12345,,aetna,,New patient registered on 2025-09-05
 PAT_055,Harsh,Pach,05/12/2004,,,,2025-09-05,returning,Aetna,12345.0,12345,,Aetna,,New patient registered on 2025-09-05
 PAT_056,Shreyansh,Bhatter,07/07/2004,,,,2025-09-05,new,Cigna,12345.0,12345,,Cigna,,New patient registered on 2025-09-05
-PAT_057,Palak,Bhatter,01/02/2002,,,,2025-09-05,returning,Blue Cross Blue Shield,12345,12345,,Blue Cross Blue Shield,,New patient registered on 2025-09-05
+PAT_057,Palak,Bhatter,01/02/2002,,,,2025-09-05,returning,Blue Cross Blue Shield,12345.0,12345,,Blue Cross Blue Shield,,New patient registered on 2025-09-05
+PAT_058,Parag,Patil,12/12/2002,(701) 368-4370,,,2025-09-06,returning,Aetna,12345,12345,,Aetna,,New patient registered on 2025-09-06

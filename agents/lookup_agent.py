@@ -217,8 +217,9 @@ class LookupAgent:
                 # Create new DataFrame with proper columns if file doesn't exist
                 df = pd.DataFrame(columns=[
                     'patient_id', 'first_name', 'last_name', 'dob', 'phone', 'email',
-                    'address', 'emergency_contact', 'insurance_provider', 'policy_number',
-                    'last_visit', 'notes'
+                    'address', 'last_visit', 'patient_type', 'insurance_carrier', 
+                    'member_id', 'group_number', 'emergency_contact', 'insurance_provider', 
+                    'policy_number', 'notes'
                 ])
             
             # Add new patient

@@ -303,9 +303,17 @@ def display_sidebar():
         """, unsafe_allow_html=True)
         
         if state_summary.get('patient_name'):
+            # Get patient type from app state
+            patient_type = "Unknown"
+            if hasattr(st.session_state.app, 'state') and st.session_state.app.state.get('lookup_result'):
+                patient_type = st.session_state.app.state['lookup_result'].patient_type.title()
+            
             st.markdown(f"""
             <div class="suggestion-card">
                 <h4>👤 Patient: {state_summary['patient_name']}</h4>
+                <p style="margin: 0.5rem 0 0 0; color: #4a5568; font-size: 0.9rem;">
+                    Type: {patient_type} Patient
+                </p>
             </div>
             """, unsafe_allow_html=True)
         
@@ -508,6 +516,12 @@ def display_smart_suggestions(current_step):
     elif current_step == "slot_selection" and st.session_state.app.state.get("available_slots"):
         available_slots = st.session_state.app.state.get("available_slots", [])
         
+        # Get patient type for duration display
+        patient_type = "new"
+        if st.session_state.app.state.get('lookup_result'):
+            patient_type = st.session_state.app.state['lookup_result'].patient_type
+        duration = 60 if patient_type == "new" else 30
+        
         # Check if slot was already selected
         slot_selected = any(("slot" in msg["content"].lower() or msg["content"].isdigit()) and msg["role"] == "user" 
                            for msg in st.session_state.messages[-3:])
@@ -516,9 +530,12 @@ def display_smart_suggestions(current_step):
             ("select" in last_agent_message or "choose" in last_agent_message or 
              "slot" in last_agent_message or "appointment" in last_agent_message)):
             
-            st.markdown("""
+            st.markdown(f"""
             <div class="selection-section">
                 <h3>📅 Select Your Appointment Slot</h3>
+                <p style="color: #4a5568; margin-bottom: 1rem;">
+                    Duration: {duration} minutes ({patient_type.title()} Patient)
+                </p>
             </div>
             """, unsafe_allow_html=True)
             
@@ -538,6 +555,7 @@ def display_smart_suggestions(current_step):
                             <p style="margin: 0; color: #4a5568;"><strong>⏰ Time:</strong> {slot.time}</p>
                             <p style="margin: 0; color: #4a5568;"><strong>👨‍⚕️ Doctor:</strong> {slot.doctor}</p>
                             <p style="margin: 0; color: #4a5568;"><strong>📍 Location:</strong> {slot.location}</p>
+                            <p style="margin: 0; color: #4a5568;"><strong>⏱️ Duration:</strong> {duration} minutes</p>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)

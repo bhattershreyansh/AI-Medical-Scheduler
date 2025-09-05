@@ -93,6 +93,7 @@ class MedicalSchedulerApp:
             patient_data = {
                 'patient_name': self.state["patient_info"].patient_name,
                 'date_of_birth': self.state["patient_info"].date_of_birth,
+                'phone': self.state["patient_info"].phone,  # ✅ ADD THIS LINE
                 'preferred_doctor': self.state["patient_info"].preferred_doctor,
                 'location': self.state["patient_info"].location
             }
@@ -109,6 +110,10 @@ class MedicalSchedulerApp:
     def _do_scheduling(self) -> str:
         """Find available appointment slots"""
         try:
+            # ✅ ADD THIS CHECK
+            if not self.state.get("lookup_result"):
+                return "❌ Error: Patient lookup failed. Please try again."
+            
             patient_data = {
                 'patient_name': self.state["patient_info"].patient_name,
                 'preferred_doctor': self.state["patient_info"].preferred_doctor,
@@ -314,22 +319,27 @@ class MedicalSchedulerApp:
             self.state["current_step"] = "completed"
             
             # Create user-friendly final response (hide technical details)
+            patient_type = self.state["lookup_result"].patient_type if self.state.get("lookup_result") else "new"
+            duration = 60 if patient_type == "new" else 30
+            
             final_response = (
                 f"{response}\n\n"
-                f"📋 **Patient Intake Forms**\n"
-                f"✅ Your intake forms have been sent to your email\n"
+                f"**Patient Intake Forms**\n"
+                f"Your intake forms have been sent to your email\n"
                 f"Please complete them before your appointment\n\n"
-                f"⏰ **Automated Reminders**\n"
-                f"✅ You'll receive {len(reminders)} reminder messages:\n"
+                f"**Automated Reminders**\n"
+                f" You'll receive {len(reminders)} reminder messages:\n"
                 f"• 24 hours before your appointment\n"
                 f"• 2 hours before (with form completion check)\n"
                 f"• 1 hour before (final confirmation)\n\n"
-                f"🎉 **Your Appointment is All Set!**\n\n"
+                f"**Your Appointment is All Set!**\n\n"
                 f"**Quick Summary:**\n"
                 f"• **Patient**: {self.state['patient_info'].patient_name}\n"
+                f"• **Patient Type**: {patient_type.title()} Patient\n"
                 f"• **Date & Time**: {self.state['selected_slot'].date} at {self.state['selected_slot'].time}\n"
                 f"• **Doctor**: {self.state['selected_slot'].doctor}\n"
                 f"• **Location**: {self.state['selected_slot'].location}\n"
+                f"• **Duration**: {duration} minutes\n"
                 f"• **Appointment ID**: {confirmation_record['appointment_id']}\n\n"
                 f"**What's Next?**\n"
                 f"1. Check your email for confirmation details\n"
