@@ -23,7 +23,7 @@ class InsuranceAgent:
     def get_insurance_greeting(self, patient_name: str) -> str:
         """Initial greeting for insurance collection"""
         return (
-            f"💳 **Insurance Information Collection**\n\n"
+            f"**Insurance Information Collection**\n\n"
             f"Hi {patient_name}! Now I need to collect your insurance information "
             f"to complete your appointment booking.\n\n"
             f"Please provide your **primary insurance carrier** (e.g., Blue Cross Blue Shield, Aetna, Cigna)."
@@ -80,7 +80,7 @@ class InsuranceAgent:
         """Validate insurance carrier"""
         carrier = carrier.strip()
         if len(carrier) < 2:
-            return "❌ Please provide a valid insurance carrier name.", False
+            return "Please provide a valid insurance carrier name.", False
         
         # Store the carrier
         self.collected_data['primary_carrier'] = carrier
@@ -90,29 +90,29 @@ class InsuranceAgent:
         """Validate member ID"""
         member_id = member_id.strip()
         if len(member_id) < 5:
-            return "❌ Member ID must be at least 5 characters long.", False
+            return "Member ID must be at least 5 characters long.", False
         
         # Clean the member ID (remove spaces and hyphens)
         clean_id = member_id.replace(' ', '').replace('-', '')
         if not clean_id.isalnum():
-            return "❌ Member ID must contain only letters and numbers.", False
+            return "Member ID must contain only letters and numbers.", False
         
         self.collected_data['member_id'] = clean_id
-        return f"✅ Got it! Your member ID is {clean_id}.", True
+        return f"Got it! Your member ID is {clean_id}.", True
     
     def _validate_group_number(self, group_number: str) -> Tuple[str, bool]:
         """Validate group number"""
         group_number = group_number.strip()
         if len(group_number) < 3:
-            return "❌ Group number must be at least 3 characters long.", False
+            return "Group number must be at least 3 characters long.", False
         
         # Clean the group number (remove spaces and hyphens)
         clean_group = group_number.replace(' ', '').replace('-', '')
         if not clean_group.isalnum():
-            return "❌ Group number must contain only letters and numbers.", False
+            return "Group number must contain only letters and numbers.", False
         
         self.collected_data['group_number'] = clean_group
-        return f"✅ Got it! Your group number is {clean_group}.", True
+        return f"Got it! Your group number is {clean_group}.", True
     
     def _get_next_field_prompt(self, field_name: str) -> str:
         """Get the prompt for the next field to collect"""
@@ -126,7 +126,7 @@ class InsuranceAgent:
     def _get_completion_message(self) -> str:
         """Get the completion message when all fields are collected"""
         return (
-            "🎉 Perfect! I have all your insurance information:\n\n"
+            "Perfect! I have all your insurance information:\n\n"
             f"**Primary Carrier**: {self.collected_data['primary_carrier']}\n"
             f"**Member ID**: {self.collected_data['member_id']}\n"
             f"**Group Number**: {self.collected_data['group_number']}\n\n"
@@ -168,14 +168,14 @@ def test_insurance_agent():
         print(f"Agent: {response}")
         
         if is_complete:
-            print(f"\n✅ Insurance Data Collected: {collected_data}")
+            print(f"\nInsurance Data Collected: {collected_data}")
             
             # Test creating InsuranceInfo object
             try:
                 insurance_info = agent.create_insurance_info()
-                print(f"✅ InsuranceInfo Created: {insurance_info}")
+                print(f"InsuranceInfo Created: {insurance_info}")
             except Exception as e:
-                print(f"❌ Error creating InsuranceInfo: {e}")
+                print(f"Error creating InsuranceInfo: {e}")
             break
 
 if __name__ == "__main__":

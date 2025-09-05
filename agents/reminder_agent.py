@@ -111,7 +111,7 @@ class ReminderAgent:
         """Send 1st reminder (regular)"""
         
         message = (
-            f"📅 **Appointment Reminder**\n\n"
+            f" **Appointment Reminder**\n\n"
             f"Hi {appointment.patient_info.patient_name}!\n\n"
             f"**Reminder**: Your appointment is tomorrow\n"
             f"**Date**: {appointment.appointment_slot.date}\n"
@@ -120,9 +120,9 @@ class ReminderAgent:
             f"**Location**: {appointment.appointment_slot.location}\n\n"
             f"**Action Required**: {action}\n\n"
             f"Please reply with:\n"
-            f"✅ CONFIRM - if you're coming\n"
-            f"❌ CANCEL - if you need to reschedule\n"
-            f"📝 NEED FORMS - if you need intake forms"
+            f" CONFIRM - if you're coming\n"
+            f" CANCEL - if you need to reschedule\n"
+            f" NEED FORMS - if you need intake forms"
         )
         
         return message
@@ -131,16 +131,16 @@ class ReminderAgent:
         """Send 2nd reminder (check if forms filled)"""
         
         message = (
-            f"�� **Forms Reminder**\n\n"
+            f" **Forms Reminder**\n\n"
             f"Hi {appointment.patient_info.patient_name}!\n\n"
             f"**Reminder**: Your appointment is in 2 hours\n"
             f"**Date**: {appointment.appointment_slot.date}\n"
             f"**Time**: {appointment.appointment_slot.time}\n\n"
             f"**Action Required**: {action}\n\n"
             f"Please reply with:\n"
-            f"✅ FORMS COMPLETED - if you've filled intake forms\n"
-            f"📝 NEED FORMS - if you need forms sent again\n"
-            f"❌ CANCEL - if you need to reschedule"
+            f"FORMS COMPLETED - if you've filled intake forms\n"
+            f"NEED FORMS - if you need forms sent again\n"
+            f"CANCEL - if you need to reschedule"
         )
         
         return message
@@ -158,9 +158,9 @@ class ReminderAgent:
             f"**Location**: {appointment.appointment_slot.location}\n\n"
             f"**Action Required**: {action}\n\n"
             f"Please reply with:\n"
-            f"✅ CONFIRMED - if you're definitely coming\n"
-            f"❌ CANCEL - if you need to cancel\n"
-            f"📞 CALL US - if you need to speak to someone"
+            f"CONFIRMED - if you're definitely coming\n"
+            f" CANCEL - if you need to cancel\n"
+            f"CALL US - if you need to speak to someone"
         )
         
         return message
@@ -189,28 +189,28 @@ class ReminderAgent:
         
         if "confirm" in response:
             return (
-                "✅ **Appointment Confirmed!**\n\n"
+                "**Appointment Confirmed!**\n\n"
                 "Great! We'll see you tomorrow. "
                 "You'll receive another reminder in 22 hours.",
                 {"status": "confirmed", "next_action": "schedule_form_reminder"}
             )
         elif "cancel" in response:
             return (
-                "❌ **Appointment Cancelled**\n\n"
+                "**Appointment Cancelled**\n\n"
                 "We've cancelled your appointment. "
                 "Please call us to reschedule.",
                 {"status": "cancelled", "next_action": "update_calendar"}
             )
         elif "forms" in response:
             return (
-                "�� **Forms Sent**\n\n"
+                "**Forms Sent**\n\n"
                 "I've sent your patient intake forms to your email. "
                 "Please complete them before your appointment.",
                 {"status": "forms_sent", "next_action": "send_intake_forms"}
             )
         else:
             return (
-                "❓ **Response Not Understood**\n\n"
+                "**Response Not Understood**\n\n"
                 "Please reply with CONFIRM, CANCEL, or NEED FORMS.",
                 {"status": "unclear", "next_action": "resend_reminder"}
             )
@@ -220,28 +220,28 @@ class ReminderAgent:
         
         if "completed" in response:
             return (
-                "✅ **Forms Confirmed!**\n\n"
+                "**Forms Confirmed!**\n\n"
                 "Perfect! Your forms are complete. "
                 "You'll receive a final confirmation reminder in 1 hour.",
                 {"status": "forms_completed", "next_action": "schedule_final_reminder"}
             )
         elif "forms" in response:
             return (
-                "�� **Forms Re-sent**\n\n"
+                "**Forms Re-sent**\n\n"
                 "I've sent your intake forms again. "
                 "Please complete them as soon as possible.",
                 {"status": "forms_resent", "next_action": "send_intake_forms"}
             )
         elif "cancel" in response:
             return (
-                "❌ **Appointment Cancelled**\n\n"
+                " **Appointment Cancelled**\n\n"
                 "We've cancelled your appointment. "
                 "Please call us to reschedule.",
                 {"status": "cancelled", "next_action": "update_calendar"}
             )
         else:
             return (
-                "❓ **Response Not Understood**\n\n"
+                " **Response Not Understood**\n\n"
                 "Please reply with FORMS COMPLETED, NEED FORMS, or CANCEL.",
                 {"status": "unclear", "next_action": "resend_reminder"}
             )
@@ -251,28 +251,28 @@ class ReminderAgent:
         
         if "confirmed" in response:
             return (
-                "✅ **Final Confirmation Received!**\n\n"
+                "**Final Confirmation Received!**\n\n"
                 "Excellent! We're looking forward to seeing you in 1 hour. "
                 "Please arrive 15 minutes early for check-in.",
                 {"status": "confirmed", "next_action": "prepare_for_appointment"}
             )
         elif "cancel" in response:
             return (
-                "❌ **Appointment Cancelled**\n\n"
+                "**Appointment Cancelled**\n\n"
                 "We've cancelled your appointment. "
                 "Please call us to reschedule.",
                 {"status": "cancelled", "next_action": "update_calendar"}
             )
         elif "call" in response:
             return (
-                "�� **Call Requested**\n\n"
+                "**Call Requested**\n\n"
                 "We'll call you shortly to discuss your appointment. "
                 "Please keep your phone nearby.",
                 {"status": "call_requested", "next_action": "initiate_call"}
             )
         else:
             return (
-                "❓ **Response Not Understood**\n\n"
+                " **Response Not Understood**\n\n"
                 "Please reply with CONFIRMED, CANCEL, or CALL US.",
                 {"status": "unclear", "next_action": "resend_reminder"}
             )
@@ -280,14 +280,14 @@ class ReminderAgent:
     def get_reminder_summary(self, appointment: AppointmentBooking, reminders: Dict) -> str:
         """Get a summary of all reminders for an appointment"""
         
-        summary = f"�� **Reminder Summary for {appointment.patient_info.patient_name}**\n\n"
+        summary = f" **Reminder Summary for {appointment.patient_info.patient_name}**\n\n"
         
         for reminder_num in range(1, 4):
             reminder_key = f"reminder_{reminder_num}"
             if reminder_key in reminders:
                 reminder = reminders[reminder_key]
-                status = "✅ Sent" if reminder["sent"] else "⏰ Pending"
-                response = f"✅ Responded" if reminder["response_received"] else "⏳ Waiting"
+                status = " Sent" if reminder["sent"] else "⏰ Pending"
+                response = f" Responded" if reminder["response_received"] else "⏳ Waiting"
                 
                 summary += (
                     f"**Reminder {reminder_num}** ({reminder['type']}):\n"

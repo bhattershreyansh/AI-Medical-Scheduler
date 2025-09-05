@@ -73,11 +73,11 @@ class FormDistributionAgent:
                 )
                 return response_message, True
             else:
-                return "❌ Failed to send intake form. Please try again.", False
+                return "Failed to send intake form. Please try again.", False
                 
         except Exception as e:
-            print(f"❌ Error sending intake form: {e}")
-            return f"❌ Error sending form: {str(e)}", False
+            print(f"Error sending intake form: {e}")
+            return f"Error sending form: {str(e)}", False
     
     def resend_intake_form(self, 
                            patient_email: str, 
@@ -99,7 +99,7 @@ class FormDistributionAgent:
         
         # Simplified message for better user experience
         message = (
-            f"📋 **Intake Forms Sent!**\n\n"
+            f"**Intake Forms Sent!**\n\n"
             f"Hi {patient_name}! Your {'new patient' if patient_type == 'new' else 'patient'} intake forms "
             f"have been sent to your email.\n\n"
             f"**Please complete them before your appointment on {appointment_date} at {appointment_time}.**\n\n"
@@ -126,9 +126,9 @@ class FormDistributionAgent:
         """Get a summary of all forms sent"""
         
         if not self.forms_sent:
-            return "�� **Forms Summary**: No forms have been sent yet."
+            return "**Forms Summary**: No forms have been sent yet."
         
-        summary = f"📋 **Form Distribution Summary**\n\n"
+        summary = f"**Form Distribution Summary**\n\n"
         summary += f"**Total Forms Sent**: {len(self.forms_sent)}\n\n"
         
         # Group by patient type
@@ -163,9 +163,9 @@ class FormDistributionAgent:
             f"**Form to Complete**:\n"
             f"• New-Patient-Intake-Form.pdf\n\n"
             f"**Why Complete Form Early?**\n"
-            f"✅ Faster check-in process\n"
-            f"✅ More time with your doctor\n"
-            f"✅ Reduced wait times\n\n"
+            f"Faster check-in process\n"
+            f"More time with your doctor\n"
+            f"Reduced wait times\n\n"
             f"**Need Form Again?**\n"
             f"Reply with 'NEED FORM' and we'll resend it immediately.\n\n"
             f"Thank you!"
@@ -195,7 +195,7 @@ class FormDistributionAgent:
 # Test function
 def test_form_distribution_agent():
     """Test the form distribution agent functionality"""
-    print("🧪 Testing Form Distribution Agent (Assignment-Accurate)...\n")
+    print("Testing Form Distribution Agent (Assignment-Accurate)...\n")
     
     agent = FormDistributionAgent(mock_mode=True)
     
@@ -213,14 +213,14 @@ def test_form_distribution_agent():
     response, success = agent.send_intake_forms(
         patient_email, patient_name, appointment_data, "new"
     )
-    print(f"Form Sent Result: {'✅ Success' if success else '❌ Failed'}")
+    print(f"Form Sent Result: {'Success' if success else 'Failed'}")
     print(f"Response: {response}")
     
     print("\n=== Testing Returning Patient Form ===")
     response, success = agent.send_intake_forms(
         "jane.doe@fakeemail.com", "Jane Doe", appointment_data, "returning"
     )
-    print(f"Form Sent Result: {'✅ Success' if success else '❌ Failed'}")
+    print(f"Form Sent Result: {'Success' if success else 'Failed'}")
     print(f"Response: {response}")
     
     print("\n=== Testing Form Status Check ===")
@@ -232,7 +232,7 @@ def test_form_distribution_agent():
         patient_email, patient_name, appointment_data
     )
     print(f"Reminder Result: {reminder_response}")
-    print(f"Reminder Sent: {'✅ Yes' if reminder_sent else '❌ No'}")
+    print(f"Reminder Sent: {'Yes' if reminder_sent else 'No'}")
     
     print(f"\n{agent.get_forms_summary()}")
 

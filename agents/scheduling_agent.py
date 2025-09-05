@@ -43,7 +43,7 @@ class SchedulingAgent:
                 self.schedule_df = pd.DataFrame()
                 
         except Exception as e:
-            print(f"❌ Error loading doctor schedule: {e}")
+            print(f" Error loading doctor schedule: {e}")
             self.schedule_df = pd.DataFrame()
     
     def find_available_slots(self, 
@@ -276,11 +276,11 @@ class SchedulingAgent:
             
             # Save the updated schedule
             self.schedule_df.to_excel(self.schedule_excel_path, index=False)
-            print(f"✅ Updated doctor schedule: {patient_type} patient booked {selected_slot.time}")
+            print(f" Updated doctor schedule: {patient_type} patient booked {selected_slot.time}")
             return True
             
         except Exception as e:
-            print(f"❌ Error updating doctor schedule: {e}")
+            print(f" Error updating doctor schedule: {e}")
             return False
     
     def book_appointment_slot(self, 
@@ -303,7 +303,7 @@ class SchedulingAgent:
             actual_index = slot_index - 1
             
             if actual_index < 0 or actual_index >= len(available_slots):
-                return f"❌ Please choose a valid slot number (1-{len(available_slots)}).", None
+                return f" Please choose a valid slot number (1-{len(available_slots)}).", None
             
             selected_slot = available_slots[actual_index]
             
@@ -316,14 +316,14 @@ class SchedulingAgent:
                 success = self.update_doctor_schedule(selected_slot, patient_type)
             
             if not success:
-                return f"❌ Failed to book appointment slot.", None
+                return f" Failed to book appointment slot.", None
             
             # Format confirmation message
             date_obj = datetime.strptime(selected_slot.date, '%Y-%m-%d')
             formatted_date = date_obj.strftime('%A, %B %d, %Y')
             
             confirmation_message = (
-                f"✅ **Appointment Slot Booked!**\n\n"
+                f" **Appointment Slot Booked!**\n\n"
                 f"**Date**: {formatted_date}\n"
                 f"**Time**: {selected_slot.time}\n"
                 f"**Doctor**: {selected_slot.doctor}\n"
@@ -336,7 +336,7 @@ class SchedulingAgent:
             return confirmation_message, selected_slot
             
         except Exception as e:
-            return f"❌ Error booking appointment slot: {e}", None
+            return f" Error booking appointment slot: {e}", None
 
     def _book_consecutive_slots(self, selected_slot: AppointmentSlot, patient_type: str) -> bool:
         """Book consecutive slots for new patients (60 minutes)"""
@@ -355,7 +355,7 @@ class SchedulingAgent:
             )
             
             if not next_slot_mask.any():
-                print(f"❌ Next slot {next_time} not available for consecutive booking")
+                print(f" Next slot {next_time} not available for consecutive booking")
                 return False
             
             # Book both slots
@@ -374,7 +374,7 @@ class SchedulingAgent:
             return success1 and success2
             
         except Exception as e:
-            print(f"❌ Error booking consecutive slots: {e}")
+            print(f" Error booking consecutive slots: {e}")
             return False
     
     def get_schedule_summary(self) -> str:

@@ -21,9 +21,9 @@ class MedicalSchedulerApp:
         self.lookup_agent = LookupAgent()
         self.scheduling_agent = SchedulingAgent()
         self.insurance_agent = InsuranceAgent()
-        self.confirmation_agent = ConfirmationAgent(mock_mode=True)
-        self.form_agent = FormDistributionAgent(mock_mode=True)
-        self.reminder_agent = ReminderAgent(mock_mode=True)
+        self.confirmation_agent = ConfirmationAgent(mock_mode=False)
+        self.form_agent = FormDistributionAgent(mock_mode=False)
+        self.reminder_agent = ReminderAgent(mock_mode=False)
         
         # Initialize state
         self.state = create_initial_state()

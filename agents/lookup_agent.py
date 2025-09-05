@@ -202,7 +202,7 @@ class LookupAgent:
             f"Let me check available appointment slots for you..."
         )
         
-        print(f"✅ New patient registered and saved: {new_patient_id}")
+        print(f" New patient registered and saved: {new_patient_id}")
         return response_message, lookup_result
     
     def _save_new_patient_to_csv(self, patient_record: Dict):
@@ -227,13 +227,13 @@ class LookupAgent:
             
             # Save back to CSV
             df.to_csv(self.patients_csv_path, index=False)
-            print(f"✅ Patient saved to {self.patients_csv_path}")
+            print(f" Patient saved to {self.patients_csv_path}")
             
             # Also update the in-memory dataframe
             self.patients_df = df
             
         except Exception as e:
-            print(f"❌ Error saving patient to CSV: {e}")
+            print(f" Error saving patient to CSV: {e}")
     
     def _generate_next_patient_id(self) -> str:
         """Generate the next available patient ID by finding the highest existing number"""
@@ -268,7 +268,7 @@ class LookupAgent:
             return new_patient_id
             
         except Exception as e:
-            print(f"❌ Error generating patient ID: {e}")
+            print(f" Error generating patient ID: {e}")
             # Fallback to simple increment
             return f"PAT_{len(self.patients_df) + 1:03d}"
     
@@ -287,12 +287,12 @@ class LookupAgent:
                 
                 # Save updated dataframe to CSV
                 self.patients_df.to_csv(self.patients_csv_path, index=False)
-                print(f"✅ Updated insurance info for patient {patient_id}")
+                print(f" Updated insurance info for patient {patient_id}")
             else:
-                print(f"❌ Patient {patient_id} not found for insurance update")
+                print(f" Patient {patient_id} not found for insurance update")
                 
         except Exception as e:
-            print(f"❌ Error updating patient insurance info: {e}")
+            print(f" Error updating patient insurance info: {e}")
     
     def mark_patient_as_returning(self, patient_id: str):
         """Mark a patient as returning after their first completed appointment"""
@@ -307,12 +307,12 @@ class LookupAgent:
                 
                 # Save updated dataframe to CSV
                 self.patients_df.to_csv(self.patients_csv_path, index=False)
-                print(f"✅ Marked patient {patient_id} as returning")
+                print(f" Marked patient {patient_id} as returning")
             else:
-                print(f"❌ Patient {patient_id} not found for status update")
+                print(f" Patient {patient_id} not found for status update")
                 
         except Exception as e:
-            print(f"❌ Error marking patient as returning: {e}")
+            print(f" Error marking patient as returning: {e}")
     
     def get_patient_summary(self, lookup_result: PatientLookupResult) -> str:
         """Get a summary of the patient lookup result"""

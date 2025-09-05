@@ -72,7 +72,7 @@ class ExcelExportService:
                 patient_name = self._extract_patient_name(appointment_data)
                 
                 response_message = (
-                    f"📊 **Appointment Data Exported Successfully!**\n\n"
+                    f" **Appointment Data Exported Successfully!**\n\n"
                     f"**File**: {self.appointments_file}\n"
                     f"**Appointment ID**: {appointment_data.get('appointment_id', 'N/A')}\n"
                     f"**Patient**: {patient_name}\n"
@@ -87,11 +87,11 @@ class ExcelExportService:
                 
                 return response_message, True
             else:
-                return "❌ Failed to export appointment data to Excel.", False
+                return " Failed to export appointment data to Excel.", False
                 
         except Exception as e:
-            print(f"❌ Error exporting appointment data: {e}")
-            return f"❌ Error exporting appointment data: {str(e)}", False
+            print(f" Error exporting appointment data: {e}")
+            return f" Error exporting appointment data: {str(e)}", False
     
     def _extract_patient_name(self, appointment_data: Dict[str, Any]) -> str:
         """Extract patient name from various data structures"""
@@ -192,7 +192,7 @@ class ExcelExportService:
         
         try:
             if not appointments_data:
-                return "⚠️ No appointment data available for admin report.", False
+                return " No appointment data available for admin report.", False
             
             # Create comprehensive report
             report_data = self._prepare_admin_report_data(appointments_data)
@@ -210,7 +210,7 @@ class ExcelExportService:
                 self._log_export("admin_report", f"{len(appointments_data)} appointments")
                 
                 response_message = (
-                    f"📊 **Admin Review Report Generated Successfully!**\n\n"
+                    f" **Admin Review Report Generated Successfully!**\n\n"
                     f"**File**: {self.admin_report_file}\n"
                     f"**Total Appointments**: {len(appointments_data)}\n"
                     f"**Report Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
@@ -225,11 +225,11 @@ class ExcelExportService:
                 
                 return response_message, True
             else:
-                return "❌ Failed to generate admin review report.", False
+                return " Failed to generate admin review report.", False
                 
         except Exception as e:
-            print(f"❌ Error generating admin report: {e}")
-            return f"❌ Error generating admin report: {str(e)}", False
+            print(f" Error generating admin report: {e}")
+            return f" Error generating admin report: {str(e)}", False
     
     def _prepare_admin_report_data(self, appointments_data: List[Dict[str, Any]]) -> pd.DataFrame:
         """Prepare comprehensive admin report data"""
@@ -331,7 +331,7 @@ class ExcelExportService:
             return True
             
         except Exception as e:
-            print(f"❌ Error exporting to Excel: {e}")
+            print(f" Error exporting to Excel: {e}")
             return False
     
     def _apply_excel_formatting(self, worksheet, export_type: str):
@@ -389,9 +389,9 @@ class ExcelExportService:
         """Get summary of all exports"""
         
         if not self.export_history:
-            return "📊 **Export Summary**: No exports performed yet."
+            return " **Export Summary**: No exports performed yet."
         
-        summary = f"📊 **Excel Export Summary**\n\n"
+        summary = f" **Excel Export Summary**\n\n"
         summary += f"**Total Exports**: {len(self.export_history)}\n\n"
         
         # Group by export type
@@ -422,7 +422,7 @@ class ExcelExportService:
 # Test function
 def test_fixed_excel_export():
     """Test the fixed Excel export service"""
-    print("🧪 Testing Fixed Excel Export Service...\n")
+    print(" Testing Fixed Excel Export Service...\n")
     
     service = ExcelExportService()
     

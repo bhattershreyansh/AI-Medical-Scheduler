@@ -310,7 +310,7 @@ def display_sidebar():
             
             st.markdown(f"""
             <div class="suggestion-card">
-                <h4>👤 Patient: {state_summary['patient_name']}</h4>
+                <h4> Patient: {state_summary['patient_name']}</h4>
                 <p style="margin: 0.5rem 0 0 0; color: #4a5568; font-size: 0.9rem;">
                     Type: {patient_type} Patient
                 </p>
@@ -368,7 +368,7 @@ def display_sidebar():
         """, unsafe_allow_html=True)
     
     # Help Section
-    st.markdown("#### ❓ Need Help?")
+    st.markdown("####  Need Help?")
     
     if st.button("💡 How It Works", type="primary", use_container_width=True):
         st.info("""
@@ -424,7 +424,7 @@ def display_chat_interface():
     # Input area with smart suggestions
     if not st.session_state.appointment_completed:
         if not st.session_state.conversation_started:
-            st.markdown("### 🚀 Ready to Schedule Your Appointment?")
+            st.markdown("###  Ready to Schedule Your Appointment?")
             col1, col2 = st.columns([1, 1])
             with col1:
                 if st.button("🏥 Start Appointment Booking", type="primary", use_container_width=True):
@@ -445,7 +445,7 @@ def display_chat_interface():
             
             # Always show text input for manual entry
             st.markdown("---")
-            user_input = st.chat_input("💬 Type your message here or use the buttons above...")
+            user_input = st.chat_input(" Type your message here or use the buttons above...")
             
             if user_input:
                 process_user_input(user_input)
@@ -480,7 +480,7 @@ def display_smart_suggestions(current_step):
         if not doctor_selected:
             st.markdown("""
             <div class="selection-section">
-                <h3>👨‍⚕️ Select Your Preferred Doctor</h3>
+                <h3> Select Your Preferred Doctor</h3>
             </div>
             """, unsafe_allow_html=True)
             
@@ -488,7 +488,7 @@ def display_smart_suggestions(current_step):
             cols = st.columns(2)
             for i, doctor in enumerate(doctors):
                 with cols[i % 2]:
-                    if st.button(f"🩺 {doctor}", key=f"doc_{doctor}", use_container_width=True, type="secondary"):
+                    if st.button(f" {doctor}", key=f"doc_{doctor}", use_container_width=True, type="secondary"):
                         process_user_input(doctor)
     
     elif ("which location" in last_agent_message or "preferred location" in last_agent_message or 
@@ -532,7 +532,7 @@ def display_smart_suggestions(current_step):
             
             st.markdown(f"""
             <div class="selection-section">
-                <h3>📅 Select Your Appointment Slot</h3>
+                <h3> Select Your Appointment Slot</h3>
                 <p style="color: #4a5568; margin-bottom: 1rem;">
                     Duration: {duration} minutes ({patient_type.title()} Patient)
                 </p>
@@ -551,17 +551,17 @@ def display_smart_suggestions(current_step):
                     <div style="padding: 1.2rem; border: 2px solid #e2e8f0; border-radius: 10px; margin: 0.5rem 0; background: #ffffff; box-shadow: 0px 2px 4px rgba(0,0,0,0.05);">
                         <h4 style="margin: 0 0 0.5rem 0; color: #2d3748; font-weight: 600;">📋 Slot {slot_number}</h4>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                            <p style="margin: 0; color: #4a5568;"><strong>📅 Date:</strong> {slot.date}</p>
-                            <p style="margin: 0; color: #4a5568;"><strong>⏰ Time:</strong> {slot.time}</p>
-                            <p style="margin: 0; color: #4a5568;"><strong>👨‍⚕️ Doctor:</strong> {slot.doctor}</p>
-                            <p style="margin: 0; color: #4a5568;"><strong>📍 Location:</strong> {slot.location}</p>
-                            <p style="margin: 0; color: #4a5568;"><strong>⏱️ Duration:</strong> {duration} minutes</p>
+                            <p style="margin: 0; color: #4a5568;"><strong> Date:</strong> {slot.date}</p>
+                            <p style="margin: 0; color: #4a5568;"><strong> Time:</strong> {slot.time}</p>
+                            <p style="margin: 0; color: #4a5568;"><strong> Doctor:</strong> {slot.doctor}</p>
+                            <p style="margin: 0; color: #4a5568;"><strong> Location:</strong> {slot.location}</p>
+                            <p style="margin: 0; color: #4a5568;"><strong> Duration:</strong> {duration} minutes</p>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
                 
                 with col2:
-                    if st.button(f"✅ Select", key=f"slot_{slot_number}", use_container_width=True, type="primary"):
+                    if st.button(f" Select", key=f"slot_{slot_number}", use_container_width=True, type="primary"):
                         process_user_input(str(slot_number))
     
     elif ("insurance" in last_agent_message and ("carrier" in last_agent_message or "provider" in last_agent_message or
@@ -574,11 +574,11 @@ def display_smart_suggestions(current_step):
         if not insurance_selected:
             st.markdown("""
             <div class="selection-section">
-                <h3>🏥 Select Your Insurance Carrier</h3>
+                <h3> Select Your Insurance Carrier</h3>
             </div>
             """, unsafe_allow_html=True)
             
-            carriers = ["Blue Cross Blue Shield", "Aetna", "Cigna", "UnitedHealthcare", "Humana", "Kaiser Permanente"]
+            carriers = ["Blue Cross Blue Shield", "Aetna", "Cigna"]
             cols = st.columns(2)
             for i, carrier in enumerate(carriers):
                 with cols[i % 2]:
@@ -603,7 +603,7 @@ def process_user_input(user_input):
                 
         except Exception as e:
             # Log technical error to console but show user-friendly message
-            print(f"❌ Technical Error: {str(e)}")
+            print(f" Technical Error: {str(e)}")
             error_msg = "I apologize, but I encountered an issue. Please try again or contact our support team."
             st.session_state.messages.append({"role": "agent", "content": error_msg})
     
@@ -637,7 +637,7 @@ def display_completion_summary():
     """Display enhanced completion summary"""
     st.markdown("""
     <div class="celebration-box">
-        🎉 Appointment Successfully Booked! 🎉
+         Appointment Successfully Booked! 🎉
         <br><br>
         Your appointment has been confirmed and all systems have been updated.
         <br>
@@ -648,11 +648,11 @@ def display_completion_summary():
     state_summary = st.session_state.app.get_state_summary()
     
     # Enhanced metrics display
-    st.markdown("### 📊 Booking Summary")
+    st.markdown("###  Booking Summary")
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        status = "✅ Success" if state_summary.get('excel_exported') else "❌ Failed"
+        status = " Success" if state_summary.get('excel_exported') else " Failed"
         color = "#38a169" if state_summary.get('excel_exported') else "#e53e3e"
         st.markdown(f"""
         <div style="text-align: center; padding: 1rem; background: {color}; color: white; border-radius: 8px;">
@@ -663,7 +663,7 @@ def display_completion_summary():
         """, unsafe_allow_html=True)
     
     with col2:
-        status = "✅ Sent" if state_summary.get('form_sent') else "❌ Failed"
+        status = " Sent" if state_summary.get('form_sent') else " Failed"
         color = "#38a169" if state_summary.get('form_sent') else "#e53e3e"
         st.markdown(f"""
         <div style="text-align: center; padding: 1rem; background: {color}; color: white; border-radius: 8px;">
@@ -674,7 +674,7 @@ def display_completion_summary():
         """, unsafe_allow_html=True)
     
     with col3:
-        status = "✅ Scheduled" if state_summary.get('reminders_scheduled') else "❌ Not Set"
+        status = " Scheduled" if state_summary.get('reminders_scheduled') else " Not Set"
         color = "#38a169" if state_summary.get('reminders_scheduled') else "#e53e3e"
         st.markdown(f"""
         <div style="text-align: center; padding: 1rem; background: {color}; color: white; border-radius: 8px;">
@@ -697,22 +697,22 @@ def display_completion_summary():
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("📧 View Email Confirmation", type="secondary", use_container_width=True):
-            st.success("✅ Email confirmation sent to your registered email address")
+        if st.button(" View Email Confirmation", type="secondary", use_container_width=True):
+            st.success(" Email confirmation sent to your registered email address")
     
     with col2:
-        if st.button("📋 Download Forms", type="secondary", use_container_width=True):
-            st.success("✅ Intake forms are available in your email")
+        if st.button(" Download Forms", type="secondary", use_container_width=True):
+            st.success(" Intake forms are available in your email")
     
     with col3:
-        if st.button("🔄 Book Another Appointment", type="primary", use_container_width=True):
+        if st.button(" Book Another Appointment", type="primary", use_container_width=True):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
 
 def display_quick_demo():
     """Display presentation-focused demo section"""
-    with st.expander("📋 Quick Demo Guide", expanded=False):
+    with st.expander("Quick Demo Guide", expanded=False):
         
         st.markdown("""
         <div class="suggestion-card" style="background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%); color: white;">

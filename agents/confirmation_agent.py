@@ -106,8 +106,8 @@ class ConfirmationAgent:
             return response_message, True, confirmation_record
             
         except Exception as e:
-            print(f"❌ Error confirming appointment: {e}")
-            return f"❌ Error confirming appointment: {str(e)}", False, {}
+            print(f"Error confirming appointment: {e}")
+            return f"Error confirming appointment: {str(e)}", False, {}
     
     def _generate_appointment_id(self) -> str:
         """Generate unique appointment ID"""
@@ -141,7 +141,7 @@ class ConfirmationAgent:
         
         slot = confirmation_record['appointment_slot']
         message = (
-            f"✅ Appointment Confirmed!\n"
+            f"Appointment Confirmed!\n"
             f"Date: {slot['date']}\n"
             f"Time: {slot['time']}\n"
             f"Doctor: {slot['doctor']}\n"
@@ -158,18 +158,18 @@ class ConfirmationAgent:
         patient_name = confirmation_record['patient_info']['patient_name']
         
         message = (
-            f"🎉 **Appointment Confirmed!**\n\n"
+            f" **Appointment Confirmed!**\n\n"
             f"Hi **{patient_name}**! Your appointment has been successfully booked.\n\n"
-            f"📅 **Appointment Details:**\n"
+            f"**Appointment Details:**\n"
             f"• **Date**: {slot['date']}\n"
             f"• **Time**: {slot['time']}\n"
             f"• **Doctor**: {slot['doctor']}\n"
             f"• **Location**: {slot['location']}\n"
             f"• **Duration**: {confirmation_record['duration']} minutes\n"
             f"• **Appointment ID**: {confirmation_record['appointment_id']}\n\n"
-            f"📧 **Confirmations Sent:**\n"
-            f"• Email confirmation: {'✅ Sent' if confirmation_record['email_sent'] else '❌ Failed'}\n"
-            f"• SMS confirmation: {'✅ Sent' if confirmation_record['sms_sent'] else '❌ Failed'}"
+            f" **Confirmations Sent:**\n"
+            f"• Email confirmation: {'Sent' if confirmation_record['email_sent'] else 'Failed'}\n"
+            f"• SMS confirmation: {'Sent' if confirmation_record['sms_sent'] else 'Failed'}"
         )
         
         return message
@@ -197,20 +197,20 @@ class ConfirmationAgent:
                 admin_response, admin_success = excel_service.generate_admin_review_report(all_appointments)
                 
                 if admin_success:
-                    print(f"✅ Admin report updated successfully")
+                    print(f"Admin report updated successfully")
                     print(f"   Total appointments: {len(all_appointments)}")
                     print(f"   Report file: {excel_service.admin_report_file}")
                     
                     # Log the update for tracking
                     self._log_admin_report_update(len(all_appointments))
                 else:
-                    print(f"⚠️ Admin report update failed: {admin_response}")
+                    print(f"Admin report update failed: {admin_response}")
             
             return export_response, export_success
             
         except Exception as e:
-            print(f"❌ Error in Excel export: {e}")
-            return f"❌ Error exporting to Excel: {str(e)}", False
+            print(f"Error in Excel export: {e}")
+            return f"Error exporting to Excel: {str(e)}", False
     
     def _update_admin_report(self):
         """Update admin review report with latest data"""
@@ -228,17 +228,17 @@ class ConfirmationAgent:
             admin_response, admin_success = excel_service.generate_admin_review_report(all_appointments)
             
             if admin_success:
-                print(f"✅ Admin report updated successfully")
+                print(f"Admin report updated successfully")
                 print(f"   Total appointments: {len(all_appointments)}")
                 print(f"   Report file: {excel_service.admin_report_file}")
                 
                 # Log the update for tracking
                 self._log_admin_report_update(len(all_appointments))
             else:
-                print(f"❌ Admin report update failed: {admin_response}")
+                print(f"Admin report update failed: {admin_response}")
                 
         except Exception as e:
-            print(f"❌ Error updating admin report: {e}")
+            print(f"Error updating admin report: {e}")
             # Don't fail the appointment confirmation if admin report fails
 
     def _log_admin_report_update(self, appointment_count: int):
@@ -251,15 +251,15 @@ class ConfirmationAgent:
         }
         
         # You could save this to a log file or database
-        print(f"📊 Admin report update logged: {log_entry}")
+        print(f"Admin report update logged: {log_entry}")
     
     def get_confirmation_summary(self) -> str:
         """Get summary of all confirmed appointments"""
         
         if not self.confirmed_appointments:
-            return "📋 **Confirmation Summary**: No appointments confirmed yet."
+            return "**Confirmation Summary**: No appointments confirmed yet."
         
-        summary = f"�� **Appointment Confirmation Summary**\n\n"
+        summary = f"**Appointment Confirmation Summary**\n\n"
         summary += f"**Total Confirmed**: {len(self.confirmed_appointments)}\n"
         summary += f"**Total Excel Exports**: {len(self.excel_exports)}\n\n"
         
@@ -286,7 +286,7 @@ class ConfirmationAgent:
 # Test function
 def test_confirmation_agent():
     """Test the confirmation agent functionality"""
-    print("🧪 Testing Confirmation Agent...\n")
+    print("Testing Confirmation Agent...\n")
     
     agent = ConfirmationAgent(mock_mode=True)
     
@@ -323,13 +323,13 @@ def test_confirmation_agent():
     response, success, confirmation_record = agent.confirm_appointment(
         appointment_data, patient_info, insurance_info, selected_slot
     )
-    print(f"Confirmation Result: {'✅ Success' if success else '❌ Failed'}")
+    print(f"Confirmation Result: {'Success' if success else 'Failed'}")
     print(f"Response: {response}")
     
     if success:
         print("\n=== Testing Excel Export ===")
         export_response, export_success = agent.export_to_excel(confirmation_record)
-        print(f"Excel Export Result: {'✅ Success' if export_success else '❌ Failed'}")
+        print(f"Excel Export Result: {'Success' if export_success else 'Failed'}")
         print(f"Export Response: {export_response}")
         
         print("\n=== Testing Confirmation Summary ===")

@@ -157,9 +157,9 @@ Keep it short (1 line) and positive."""
         
         try:
             response = self.llm.invoke([SystemMessage(content=system_prompt)])
-            return f"✅ {response.content.strip()}"
+            return f"{response.content.strip()}"
         except:
-            return f"✅ Got it! {field_name.replace('_', ' ').title()}: {field_value}"
+            return f"Got it! {field_name.replace('_', ' ').title()}: {field_value}"
     
     def _get_next_field_prompt_with_llm(self) -> str:
         """Generate contextual prompt for next field using LLM"""
@@ -199,7 +199,7 @@ Be encouraging and specific about what's needed."""
         
         try:
             response = self.llm.invoke([SystemMessage(content=system_prompt)])
-            return f"❌ {response.content.strip()}"
+            return f"{response.content.strip()}"
         except:
             return f"I couldn't validate that {field_name.replace('_', ' ')}. Could you please try again?"
     
@@ -222,8 +222,8 @@ Be encouraging and specific about what's needed."""
             return f"🎉 {response.content.strip()}"
         except:
             # Fallback completion message
-        return (
-                f"🎉 **Perfect! I have all your information:**\n\n"
+            return (
+                f"**Perfect! I have all your information:**\n\n"
                 f"• **Name**: {self.collected_data.get('patient_name')}\n"
                 f"• **DOB**: {self.collected_data.get('date_of_birth')}\n"
                 f"• **Phone**: {self.collected_data.get('phone')}\n"
@@ -253,7 +253,7 @@ Be encouraging and specific about what's needed."""
 # Test function
 def test_greeting_agent():
     """Test the LLM-powered greeting agent"""
-    print("🧪 Testing LLM-Powered Greeting Agent with Step-by-Step Collection...\n")
+    print("Testing LLM-Powered Greeting Agent with Step-by-Step Collection...\n")
     
     agent = GreetingAgent()
     
