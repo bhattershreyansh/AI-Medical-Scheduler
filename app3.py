@@ -92,11 +92,29 @@ st.markdown("""
         transition: all 0.2s ease;
         background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
         color: white;
+        min-height: 2.5rem;
     }
     
     .stButton > button:hover {
         transform: translateY(-1px);
         box-shadow: 0px 4px 12px rgba(44, 82, 130, 0.3);
+        background: linear-gradient(135deg, #2a4365 0%, #2c5282 100%);
+    }
+    
+    .stButton > button:active {
+        transform: translateY(0px);
+    }
+    
+    /* Secondary button styling */
+    .stButton > button[kind="secondary"] {
+        background: #ffffff;
+        color: #2c5282;
+        border: 2px solid #3182ce;
+    }
+    
+    .stButton > button[kind="secondary"]:hover {
+        background: #f7fafc;
+        border-color: #2c5282;
     }
 
     /* Suggestion Cards */
@@ -107,11 +125,29 @@ st.markdown("""
         border: 1px solid #e2e8f0;
         margin-bottom: 1rem;
         transition: all 0.2s ease;
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
     }
     
     .suggestion-card:hover {
         background: #edf2f7;
         transform: translateY(-1px);
+        box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Selection section styling */
+    .selection-section {
+        background: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+    }
+    
+    .selection-section h3 {
+        color: #2d3748;
+        margin-bottom: 1rem;
+        font-weight: 600;
     }
 
     /* Enhanced Metrics */
@@ -229,176 +265,179 @@ def display_header():
     st.markdown("""
     <div class="main-header">
         <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+            <div style="font-size: 3rem;">🏥</div>
             <div>
-                <h1 style="margin: 0; font-size: 2.8rem; font-weight: 700;">Medical Scheduling System</h1>
-                <p style="margin: 0; font-size: 1.1rem; opacity: 0.9;">Intelligent Appointment Scheduling</p>
+                <h1 style="margin: 0; font-size: 2.8rem; font-weight: 700;">MedSchedule AI</h1>
+                <p style="margin: 0; font-size: 1.1rem; opacity: 0.9;">Intelligent Medical Appointment Scheduling</p>
+                <p style="margin: 0; font-size: 0.9rem; opacity: 0.7;">Powered by LangGraph + LangChain Multi-Agent Architecture</p>
             </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 def display_sidebar():
-    """Display enhanced sidebar with system information and controls"""
-    st.markdown("### System Dashboard")
-    
-    # Enhanced System Status
-    st.markdown("#### System Status")
-    
-    # Create metrics
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("""
-        <div class="metric-card">
-            <h3>7</h3>
-            <p>AI Agents</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div class="metric-card">
-            <h3>4</h3>
-            <p>Doctors</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""
-        <div class="metric-card">
-            <h3>3</h3>
-            <p>Locations</p>
-        </div>
-        """, unsafe_allow_html=True)
+    """Display clean sidebar focused on user experience"""
+    st.markdown("### 🏥 Appointment Assistant")
     
     # Enhanced Current State
     if hasattr(st.session_state, 'app'):
         state_summary = st.session_state.app.get_state_summary()
         
-        st.markdown("#### Current Session")
+        st.markdown("#### 📋 Current Status")
         
         # Current step with visual indicator
         current_step = state_summary.get('current_step', 'Not started')
         step_display = {
-            'greeting': 'Initial Conversation',
-            'slot_selection': 'Time Selection',
-            'insurance': 'Insurance Processing',
-            'completed': 'Appointment Complete'
+            'greeting': '💬 Collecting Information',
+            'slot_selection': '📅 Selecting Time Slot',
+            'insurance': '🏥 Processing Insurance',
+            'completed': '✅ Appointment Complete'
         }
         
+        step_text = step_display.get(current_step, current_step.replace('_', ' ').title())
+        
         st.markdown(f"""
-        <div class="suggestion-card">
-            <h4>{step_display.get(current_step, current_step.replace('_', ' ').title())}</h4>
+        <div class="suggestion-card" style="background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%); color: white;">
+            <h4 style="margin: 0; color: white;">{step_text}</h4>
         </div>
         """, unsafe_allow_html=True)
         
         if state_summary.get('patient_name'):
             st.markdown(f"""
             <div class="suggestion-card">
-                <h4>Patient: {state_summary['patient_name']}</h4>
+                <h4>👤 Patient: {state_summary['patient_name']}</h4>
             </div>
             """, unsafe_allow_html=True)
         
-        # Enhanced Progress indicators
-        st.markdown("#### Progress Tracker")
-        progress_items = [
-            ("Patient Info", state_summary.get('patient_name') is not None),
-            ("Excel Export", state_summary.get('excel_exported', False)),
-            ("Forms Sent", state_summary.get('form_sent', False)),
-            ("Reminders", state_summary.get('reminders_scheduled', False))
-        ]
-        
-        for item, completed in progress_items:
-            status_color = "#38a169" if completed else "#718096"
-            status_icon = "✓" if completed else "⋯"
+        # User-focused Progress indicators (only show what matters to user)
+        if current_step != 'greeting':
+            st.markdown("#### ✅ Progress")
+            progress_items = [
+                ("👤 Personal Info", state_summary.get('patient_name') is not None),
+                ("📅 Appointment Slot", current_step in ['insurance', 'completed']),
+                ("🏥 Insurance Details", current_step == 'completed'),
+                ("✅ Confirmation", state_summary.get('reminders_scheduled', False))
+            ]
             
-            st.markdown(f"""
-            <div class="progress-item" style="border-left-color: {status_color};">
-                <span style="margin-right: 0.5rem; color: {status_color}; font-weight: 500;">{status_icon}</span>
-                <span>{item}</span>
-            </div>
-            """, unsafe_allow_html=True)
+            for item, completed in progress_items:
+                status_icon = "✅" if completed else "⏳"
+                
+                st.markdown(f"""
+                <div class="progress-item">
+                    <span style="margin-right: 0.5rem; font-size: 1.1rem;">{status_icon}</span>
+                    <span style="color: {'#2d3748' if completed else '#718096'};">{item}</span>
+                </div>
+                """, unsafe_allow_html=True)
     
     # Enhanced Controls
-    st.markdown("#### Session Controls")
+    st.markdown("#### 🎮 Controls")
     
-    if st.button("Reset Session", type="secondary", use_container_width=True):
+    if st.button("🔄 Start New Appointment", type="secondary", use_container_width=True):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
     
-    # System Features
-    st.markdown("#### System Features")
+    # Available Services (User-focused)
+    st.markdown("#### 🏥 Available Services")
     
-    features = [
-        ("AI Agents", "7 specialized agents"),
-        ("Scheduling", "Smart time logic"),
-        ("Insurance", "Multi-carrier support"),
-        ("Export", "Professional reports"),
-        ("Forms", "Automated distribution"),
-        ("Reminders", "3-tier system")
+    services = [
+        ("👨‍⚕️ Doctors", "4 specialists available"),
+        ("📍 Locations", "3 convenient locations"),
+        ("📅 Scheduling", "Same-day appointments"),
+        ("🏥 Insurance", "Most carriers accepted"),
+        ("📋 Digital Forms", "Paperless check-in"),
+        ("⏰ Reminders", "Automated notifications")
     ]
     
-    for feature, description in features:
+    for service, description in services:
         st.markdown(f"""
-        <div style="display: flex; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0;">
+        <div style="display: flex; align-items: center; padding: 0.75rem; margin: 0.25rem 0; background: #f7fafc; border-radius: 6px; border-left: 3px solid #3182ce;">
             <div>
-                <span style="font-weight: 500;">{feature}</span><br>
+                <span style="font-weight: 500; color: #2d3748;">{service}</span><br>
                 <small style="color: #718096;">{description}</small>
             </div>
         </div>
         """, unsafe_allow_html=True)
     
-    # Quick Actions
-    st.markdown("#### Quick Actions")
+    # Help Section
+    st.markdown("#### ❓ Need Help?")
     
-    if st.button("Demo Mode", type="primary", use_container_width=True):
-        st.info("Use the suggestion buttons for quick demonstration")
+    if st.button("💡 How It Works", type="primary", use_container_width=True):
+        st.info("""
+        **Simple 4-Step Process:**
+        1. 👤 Share your basic information
+        2. 📅 Choose your preferred appointment slot
+        3. 🏥 Provide insurance details
+        4. ✅ Get confirmation & forms via email
+        """)
+    
+    # Contact Info
+    st.markdown("#### 📞 Contact")
+    st.markdown("""
+    <div style="background: #f7fafc; padding: 1rem; border-radius: 8px; text-align: center;">
+        <p style="margin: 0; color: #2d3748;"><strong>📞 (555) 123-4567</strong></p>
+        <p style="margin: 0; color: #718096;"><small>For assistance or changes</small></p>
+    </div>
+    """, unsafe_allow_html=True)
 
 def display_chat_interface():
     """Display the enhanced chat interface with clickable options"""
-    st.subheader("AI Agent Conversation")
+    st.subheader("🤖 AI Agent Conversation")
     
-    # Chat container
+    # Chat container with better styling
     chat_container = st.container()
     
     with chat_container:
         # Display conversation history
-        for message in st.session_state.messages:
-            if message["role"] == "user":
-                st.markdown(f"""
-                <div class="chat-message user-message">
-                    <strong>You:</strong> {message["content"]}
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                <div class="chat-message agent-message">
-                    <strong>Agent:</strong> {message["content"]}
-                </div>
-                """, unsafe_allow_html=True)
+        if st.session_state.messages:
+            for message in st.session_state.messages:
+                if message["role"] == "user":
+                    st.markdown(f"""
+                    <div class="chat-message user-message">
+                        <strong>👤 You:</strong> {message["content"]}
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                    <div class="chat-message agent-message">
+                        <strong>🤖 AI Agent:</strong> {message["content"]}
+                    </div>
+                    """, unsafe_allow_html=True)
+        else:
+            # Welcome message when no conversation started
+            st.markdown("""
+            <div style="text-align: center; padding: 2rem; background: #f7fafc; border-radius: 12px; margin: 1rem 0;">
+                <h3 style="color: #2d3748; margin-bottom: 1rem;">👋 Welcome to Medical Scheduling AI</h3>
+                <p style="color: #4a5568; margin-bottom: 1.5rem;">I'm here to help you schedule your medical appointment quickly and easily.</p>
+                <p style="color: #718096; font-size: 0.9rem;">Click "Start Appointment Booking" below to begin!</p>
+            </div>
+            """, unsafe_allow_html=True)
     
     # Input area with smart suggestions
     if not st.session_state.appointment_completed:
         if not st.session_state.conversation_started:
-            st.markdown("### Ready to Schedule Your Appointment?")
+            st.markdown("### 🚀 Ready to Schedule Your Appointment?")
             col1, col2 = st.columns([1, 1])
             with col1:
-                if st.button("Start Appointment Booking", type="primary", use_container_width=True):
+                if st.button("🏥 Start Appointment Booking", type="primary", use_container_width=True):
                     greeting = st.session_state.app.start_conversation()
                     st.session_state.messages.append({"role": "agent", "content": greeting})
                     st.session_state.conversation_started = True
                     st.rerun()
             with col2:
-                if st.button("Quick Demo", type="secondary", use_container_width=True):
-                    demo_response = "Hello! I'm your scheduling assistant. Let me help you book an appointment. I'll need some basic information from you. Let's start with your full name."
+                if st.button("⚡ Quick Demo", type="secondary", use_container_width=True):
+                    demo_response = "Hello! I'm your AI scheduling assistant. Let me help you book an appointment. I'll need some basic information from you. Let's start with your full name."
                     st.session_state.messages.append({"role": "agent", "content": demo_response})
                     st.session_state.conversation_started = True
                     st.rerun()
         else:
+            # Show smart suggestions based on conversation context
             current_step = st.session_state.app.state.get("current_step", "greeting")
             display_smart_suggestions(current_step)
             
-            user_input = st.chat_input("Type your message here...")
+            # Always show text input for manual entry
+            st.markdown("---")
+            user_input = st.chat_input("💬 Type your message here or use the buttons above...")
             
             if user_input:
                 process_user_input(user_input)
@@ -408,180 +447,291 @@ def display_chat_interface():
 def display_smart_suggestions(current_step):
     """Display context-aware selection options based on AI conversation"""
     
-    if st.session_state.messages:
-        last_agent_message = ""
-        for msg in reversed(st.session_state.messages):
-            if msg["role"] == "agent":
-                last_agent_message = msg["content"].lower()
-                break
+    if not st.session_state.messages:
+        return
+    
+    # Get the last agent message to understand what input is needed
+    last_agent_message = ""
+    for msg in reversed(st.session_state.messages):
+        if msg["role"] == "agent":
+            last_agent_message = msg["content"].lower()
+            break
+    
+    # Check if we're waiting for user input (no selection buttons should show if agent is still processing)
+    if "✅" in last_agent_message or "confirmed" in last_agent_message or "selected" in last_agent_message:
+        return  # Don't show selection options if something was already selected
+    
+    # Only show suggestions if the agent is specifically asking for that information
+    if ("which doctor" in last_agent_message or "preferred doctor" in last_agent_message or 
+        "doctor would you prefer" in last_agent_message or "choose a doctor" in last_agent_message):
         
-        if "doctor" in last_agent_message and "prefer" in last_agent_message:
-            st.markdown("Select Doctor")
+        # Check if doctor was already selected in conversation
+        doctor_selected = any("dr." in msg["content"].lower() and msg["role"] == "user" 
+                             for msg in st.session_state.messages[-5:])  # Check last 5 messages
+        
+        if not doctor_selected:
+            st.markdown("""
+            <div class="selection-section">
+                <h3>👨‍⚕️ Select Your Preferred Doctor</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
             doctors = ["Dr. Naveen", "Dr. Aish", "Dr. Shreyansh", "Dr. Naresh"]
-            cols = st.columns(len(doctors))
+            cols = st.columns(2)
             for i, doctor in enumerate(doctors):
-                with cols[i]:
-                    if st.button(doctor, key=f"doc_{doctor}", use_container_width=True):
+                with cols[i % 2]:
+                    if st.button(f"🩺 {doctor}", key=f"doc_{doctor}", use_container_width=True, type="secondary"):
                         process_user_input(doctor)
+    
+    elif ("which location" in last_agent_message or "preferred location" in last_agent_message or 
+          "location would you prefer" in last_agent_message or "choose a location" in last_agent_message):
         
-        elif "location" in last_agent_message and ("prefer" in last_agent_message or "where" in last_agent_message):
-            st.markdown("Select Location")
+        # Check if location was already selected
+        location_selected = any(loc in msg["content"].lower() and msg["role"] == "user" 
+                               for msg in st.session_state.messages[-5:] 
+                               for loc in ["gachibowli", "jubliee hills", "banjara hills"])
+        
+        if not location_selected:
+            st.markdown("""
+            <div class="selection-section">
+                <h3>📍 Select Your Preferred Location</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
             locations = ["Gachibowli", "Jubliee Hills", "Banjara Hills"]
-            cols = st.columns(len(locations))
+            cols = st.columns(3)
             for i, location in enumerate(locations):
                 with cols[i]:
-                    if st.button(location, key=f"loc_{location}", use_container_width=True):
+                    if st.button(f"🏥 {location}", key=f"loc_{location}", use_container_width=True, type="secondary"):
                         process_user_input(location)
+    
+    elif current_step == "slot_selection" and st.session_state.app.state.get("available_slots"):
+        available_slots = st.session_state.app.state.get("available_slots", [])
         
-        elif current_step == "slot_selection" and st.session_state.app.state.get("available_slots"):
-            st.markdown("Select Appointment Slot")
-            available_slots = st.session_state.app.state.get("available_slots", [])
+        # Check if slot was already selected
+        slot_selected = any(("slot" in msg["content"].lower() or msg["content"].isdigit()) and msg["role"] == "user" 
+                           for msg in st.session_state.messages[-3:])
+        
+        if (available_slots and not slot_selected and 
+            ("select" in last_agent_message or "choose" in last_agent_message or 
+             "slot" in last_agent_message or "appointment" in last_agent_message)):
             
-            if available_slots:
-                slots_per_row = 3
-                for i in range(0, len(available_slots), slots_per_row):
-                    row_slots = available_slots[i:i+slots_per_row]
-                    cols = st.columns(len(row_slots))
-                    
-                    for j, slot in enumerate(row_slots):
-                        with cols[j]:
-                            slot_number = i + j + 1
-                            date_str = slot.date
-                            time_str = slot.time
-                            doctor_str = slot.doctor
-                            
-                            button_label = f"Slot {slot_number}\n{date_str}\n{time_str}\n{doctor_str}"
-                            
-                            if st.button(button_label, key=f"slot_{slot_number}", use_container_width=True):
-                                process_user_input(str(slot_number))
+            st.markdown("""
+            <div class="selection-section">
+                <h3>📅 Select Your Appointment Slot</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Display slots in a clean card format
+            for i, slot in enumerate(available_slots):
+                slot_number = i + 1
+                
+                # Create a card-like display for each slot
+                col1, col2 = st.columns([4, 1])
+                
+                with col1:
+                    st.markdown(f"""
+                    <div style="padding: 1.2rem; border: 2px solid #e2e8f0; border-radius: 10px; margin: 0.5rem 0; background: #ffffff; box-shadow: 0px 2px 4px rgba(0,0,0,0.05);">
+                        <h4 style="margin: 0 0 0.5rem 0; color: #2d3748; font-weight: 600;">📋 Slot {slot_number}</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                            <p style="margin: 0; color: #4a5568;"><strong>📅 Date:</strong> {slot.date}</p>
+                            <p style="margin: 0; color: #4a5568;"><strong>⏰ Time:</strong> {slot.time}</p>
+                            <p style="margin: 0; color: #4a5568;"><strong>👨‍⚕️ Doctor:</strong> {slot.doctor}</p>
+                            <p style="margin: 0; color: #4a5568;"><strong>📍 Location:</strong> {slot.location}</p>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                with col2:
+                    if st.button(f"✅ Select", key=f"slot_{slot_number}", use_container_width=True, type="primary"):
+                        process_user_input(str(slot_number))
+    
+    elif ("insurance" in last_agent_message and ("carrier" in last_agent_message or "provider" in last_agent_message or
+                                                "company" in last_agent_message)):
+        
+        # Check if insurance was already selected
+        insurance_selected = any("insurance" in msg["content"].lower() and msg["role"] == "user" 
+                                for msg in st.session_state.messages[-3:])
+        
+        if not insurance_selected:
+            st.markdown("""
+            <div class="selection-section">
+                <h3>🏥 Select Your Insurance Carrier</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            carriers = ["Blue Cross Blue Shield", "Aetna", "Cigna", "UnitedHealthcare", "Humana", "Kaiser Permanente"]
+            cols = st.columns(2)
+            for i, carrier in enumerate(carriers):
+                with cols[i % 2]:
+                    if st.button(f"🏥 {carrier}", key=f"ins_{carrier}", use_container_width=True, type="secondary"):
+                        process_user_input(carrier)
 
 def process_user_input(user_input):
     """Process user input and update conversation"""
     st.session_state.messages.append({"role": "user", "content": user_input})
     
-    with st.spinner("AI Agent is processing..."):
+    with st.spinner("🤖 Processing your request..."):
         try:
             response = st.session_state.app.process_user_input(user_input)
-            st.session_state.messages.append({"role": "agent", "content": response})
+            
+            # Clean up response for presentation (remove technical details)
+            clean_response = clean_response_for_presentation(response)
+            st.session_state.messages.append({"role": "agent", "content": clean_response})
             
             if st.session_state.app.state.get("current_step") == "completed":
                 st.session_state.appointment_completed = True
+                st.balloons()  # Celebration for completed appointment
                 
         except Exception as e:
-            error_msg = f"Error: {str(e)}"
+            # Log technical error to console but show user-friendly message
+            print(f"❌ Technical Error: {str(e)}")
+            error_msg = "I apologize, but I encountered an issue. Please try again or contact our support team."
             st.session_state.messages.append({"role": "agent", "content": error_msg})
     
     st.rerun()
+
+def clean_response_for_presentation(response):
+    """Clean up agent response for better presentation"""
+    # Remove technical markers and logs
+    lines = response.split('\n')
+    clean_lines = []
+    
+    for line in lines:
+        # Skip technical log lines
+        if any(marker in line for marker in ['✅', '📊', '📧', '🔄', 'Updated', 'exported', 'logged']):
+            continue
+        # Skip lines that start with technical indicators
+        if line.strip().startswith(('✅', '📊', '📧', '🔄')):
+            continue
+        # Keep user-relevant content
+        clean_lines.append(line)
+    
+    clean_response = '\n'.join(clean_lines).strip()
+    
+    # If response is too short after cleaning, return original
+    if len(clean_response) < 50:
+        return response
+    
+    return clean_response
 
 def display_completion_summary():
     """Display enhanced completion summary"""
     st.markdown("""
     <div class="celebration-box">
-        Appointment Successfully Booked!
+        🎉 Appointment Successfully Booked! 🎉
         <br><br>
         Your appointment has been confirmed and all systems have been updated.
+        <br>
+        <small style="opacity: 0.8;">Thank you for choosing our medical practice!</small>
     </div>
     """, unsafe_allow_html=True)
     
     state_summary = st.session_state.app.get_state_summary()
     
+    # Enhanced metrics display
+    st.markdown("### 📊 Booking Summary")
     col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        status = "Success" if state_summary.get('excel_exported') else "Failed"
-        st.metric("Excel Export", status)
-    with col2:
-        status = "Sent" if state_summary.get('form_sent') else "Failed"
-        st.metric("Forms", status)
-    with col3:
-        status = "Scheduled" if state_summary.get('reminders_scheduled') else "Not Set"
-        st.metric("Reminders", status)
-    with col4:
-        st.metric("Status", "Complete")
     
-    st.markdown("### Next Steps")
+    with col1:
+        status = "✅ Success" if state_summary.get('excel_exported') else "❌ Failed"
+        color = "#38a169" if state_summary.get('excel_exported') else "#e53e3e"
+        st.markdown(f"""
+        <div style="text-align: center; padding: 1rem; background: {color}; color: white; border-radius: 8px;">
+            <h3 style="margin: 0; color: white;">📊</h3>
+            <p style="margin: 0; color: white;">Excel Export</p>
+            <small style="color: white; opacity: 0.9;">{status}</small>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        status = "✅ Sent" if state_summary.get('form_sent') else "❌ Failed"
+        color = "#38a169" if state_summary.get('form_sent') else "#e53e3e"
+        st.markdown(f"""
+        <div style="text-align: center; padding: 1rem; background: {color}; color: white; border-radius: 8px;">
+            <h3 style="margin: 0; color: white;">📋</h3>
+            <p style="margin: 0; color: white;">Forms</p>
+            <small style="color: white; opacity: 0.9;">{status}</small>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        status = "✅ Scheduled" if state_summary.get('reminders_scheduled') else "❌ Not Set"
+        color = "#38a169" if state_summary.get('reminders_scheduled') else "#e53e3e"
+        st.markdown(f"""
+        <div style="text-align: center; padding: 1rem; background: {color}; color: white; border-radius: 8px;">
+            <h3 style="margin: 0; color: white;">⏰</h3>
+            <p style="margin: 0; color: white;">Reminders</p>
+            <small style="color: white; opacity: 0.9;">{status}</small>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown(f"""
+        <div style="text-align: center; padding: 1rem; background: #38a169; color: white; border-radius: 8px;">
+            <h3 style="margin: 0; color: white;">✅</h3>
+            <p style="margin: 0; color: white;">Status</p>
+            <small style="color: white; opacity: 0.9;">Complete</small>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("### 🚀 Next Steps")
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("View Email Confirmation", type="secondary", use_container_width=True):
-            st.info("Email confirmation sent to your registered email address")
+        if st.button("📧 View Email Confirmation", type="secondary", use_container_width=True):
+            st.success("✅ Email confirmation sent to your registered email address")
     
     with col2:
-        if st.button("Download Forms", type="secondary", use_container_width=True):
-            st.info("Intake forms are available in your email")
+        if st.button("📋 Download Forms", type="secondary", use_container_width=True):
+            st.success("✅ Intake forms are available in your email")
     
     with col3:
-        if st.button("Book Another", type="primary", use_container_width=True):
+        if st.button("🔄 Book Another Appointment", type="primary", use_container_width=True):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
 
 def display_quick_demo():
-    """Display enhanced quick demo section"""
-    with st.expander("Complete Demo Walkthrough", expanded=False):
+    """Display presentation-focused demo section"""
+    with st.expander("📋 Quick Demo Guide", expanded=False):
         
         st.markdown("""
-        <div class="suggestion-card">
-            <h3>Complete Demo Flow</h3>
-            <p>Follow this sequence for a full system demonstration:</p>
+        <div class="suggestion-card" style="background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%); color: white;">
+            <h3 style="color: white; margin-bottom: 1rem;">🎯 Demo Flow (2-3 minutes)</h3>
+            <p style="color: white; opacity: 0.9;">Follow this sequence for a complete demonstration:</p>
         </div>
         """, unsafe_allow_html=True)
         
         demo_steps = [
-            {
-                "step": "Start Conversation",
-                "action": "Click 'Start Appointment Booking'",
-                "tip": "Initiates the AI agent conversation"
-            },
-            {
-                "step": "Patient Information",
-                "action": "Provide: 'John Smith'",
-                "tip": "AI will ask for each detail individually"
-            },
-            {
-                "step": "Contact Details",
-                "action": "Provide: DOB, Phone, Email",
-                "tip": "Use quick-fill buttons for faster demo"
-            },
-            {
-                "step": "Doctor & Location",
-                "action": "Select: 'Dr. Naveen' and 'Gachibowli'",
-                "tip": "Click the suggestion buttons for instant selection"
-            },
-            {
-                "step": "Appointment Slot",
-                "action": "Choose slot number: '1', '2', or '3'",
-                "tip": "Use the quick slot buttons above chat"
-            },
-            {
-                "step": "Insurance Information",
-                "action": "Select carrier, member ID, group number",
-                "tip": "Use insurance quick-fill options"
-            },
-            {
-                "step": "Confirmation",
-                "action": "System automatically completes booking",
-                "tip": "Watch for Excel export and form distribution"
-            }
+            ("1️⃣ Start", "Click 'Start Appointment Booking'", "Begin the AI conversation"),
+            ("2️⃣ Name", "Enter: 'John Smith'", "AI will guide you through each step"),
+            ("3️⃣ Details", "Provide DOB, Phone, Email", "Use natural language or buttons"),
+            ("4️⃣ Preferences", "Select Doctor & Location", "Click the suggestion buttons"),
+            ("5️⃣ Schedule", "Choose appointment slot", "Pick from available times"),
+            ("6️⃣ Insurance", "Select insurance carrier", "Quick selection options"),
+            ("7️⃣ Complete", "Automatic confirmation", "System handles the rest")
         ]
         
-        for step_info in demo_steps:
+        for step, action, tip in demo_steps:
             st.markdown(f"""
-            <div style="margin: 1rem 0; padding: 1rem; background: #f7fafc; border-radius: 8px; border-left: 4px solid #3182ce;">
-                <h4 style="margin: 0 0 0.5rem 0; color: #2d3748;">{step_info['step']}</h4>
-                <p style="margin: 0 0 0.5rem 0; font-weight: 500;">{step_info['action']}</p>
-                <small style="color: #718096;">{step_info['tip']}</small>
+            <div style="display: flex; align-items: center; margin: 0.75rem 0; padding: 1rem; background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0px 2px 4px rgba(0,0,0,0.05);">
+                <div style="margin-right: 1rem; font-size: 1.5rem;">{step}</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 500; color: #2d3748;">{action}</div>
+                    <div style="font-size: 0.9rem; color: #718096;">{tip}</div>
+                </div>
             </div>
             """, unsafe_allow_html=True)
         
         st.markdown("""
-        <div class="suggestion-card" style="background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%); color: white;">
-            <h4>Pro Tips for Quick Demo</h4>
-            <ul style="margin: 0; padding-left: 1.5rem;">
-                <li>Use the suggestion buttons for instant input</li>
-                <li>The AI responds to natural language</li>
+        <div style="background: #f0fff4; border: 1px solid #9ae6b4; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+            <h4 style="color: #2f855a; margin: 0 0 0.5rem 0;">💡 Presentation Tips</h4>
+            <ul style="margin: 0; color: #2f855a;">
+                <li>Use the colored buttons for quick selections</li>
                 <li>Watch the progress tracker in the sidebar</li>
-                <li>Each step builds on the previous one</li>
-                <li>Full demo takes about 2-3 minutes</li>
+                <li>Natural language input works too</li>
+                <li>System automatically handles backend processes</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -670,25 +820,33 @@ def main():
     initialize_session_state()
     display_header()
     
-    col1, col2 = st.columns([2, 1])
+    # Main layout - focus on chat interface
+    col1, col2 = st.columns([3, 1])
     
     with col1:
         display_chat_interface()
-        display_quick_demo()
-        display_excel_data()
+        
+        # Only show demo section if appointment not completed
+        if not st.session_state.appointment_completed:
+            display_quick_demo()
     
     with col2:
         display_sidebar()
     
-    st.markdown("---")
-    display_system_features()
+    # Show Excel data only after completion for presentation
+    if st.session_state.appointment_completed:
+        st.markdown("---")
+        display_excel_data()
+        st.markdown("---")
+        display_system_features()
     
+    # Clean footer
     st.markdown("---")
     st.markdown("""
     <div style="text-align: center; color: #718096; padding: 1rem;">
-        Medical Appointment Scheduling AI Agent
+        🏥 <strong>MedSchedule AI</strong> - Intelligent Medical Appointment Scheduling
         <br>
-        <small>Built with LangGraph + LangChain | Streamlit UI | Assignment Demo</small>
+        <small>Powered by LangGraph + LangChain Multi-Agent Architecture</small>
     </div>
     """, unsafe_allow_html=True)
 
